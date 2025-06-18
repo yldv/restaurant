@@ -1,0 +1,9 @@
+node_modules/
+.env
+dist/
+venv/
+env/
+.idea
+*.sqlite3
+__pycache__/
+migrations/
