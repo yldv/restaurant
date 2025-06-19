@@ -78,6 +78,50 @@ def booking(request):
     return Response(serializer.errors, status=400)
 
 
+@api_view(['POST'])
+def cancel_booking(request):
+    if not request.user.is_authenticated:
+        return Response({'error': 'User not authenticated'}, status=401)
+    booking_id = request.data.get('booking_id')
+    if not booking_id:
+        return Response({'error': 'Booking ID required'}, status=400)
+    booking = Booking.objects.filter(id=booking_id, user=request.user).first()
+    if not booking:
+        return Response({'error': 'Booking not found'}, status=404)
+    booking.status = 'rejected'
+    booking.save()
+    booking.table.is_reserved = False
+    booking.table.save()
+    return Response({'booking': f'{booking} canceled successfully'}, status=200)
+
+
+@api_view(['POST'])
+def confirm_booking(request):
+    if not request.user.is_authenticated:
+        return Response({'error': 'User not authenticated'}, status=401)
+    if not request.user.is_staff:
+        return Response({'error': 'Only admins can confirm bookings'}, status=403)
+    booking_id = request.data.get('booking_id')
+    if not booking_id:
+        return Response({'error': 'Booking ID is required'}, status=400)
+    booking = Booking.objects.filter(id=booking_id).first()
+    if not booking:
+        return Response({'error': 'Booking not found'}, status=404)
+    booking.status = 'accepted'
+    booking.save()
+    booking.table.is_reserved = True
+    booking.table.save()
+    return Response({'message': f'Booking {booking.id} confirmed'}, status=200)
+
+
+@api_view(['GET'])
+def me(request):
+    if not request.user.is_authenticated:
+        return Response({'error': 'User not authenticated'}, status=401)
+    serializer = UserSerializer(request.user)
+    return Response({'user': serializer.data}, status=200)
+
+
 @api_view(['GET'])
 def booking_list(request):
     if not request.user.is_authenticated:
