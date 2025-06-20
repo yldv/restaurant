@@ -27,7 +27,7 @@ class Foods(models.Model):
 
 class Menu(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    foods = models.ForeignKey(Foods, on_delete=models.CASCADE)
+    foods = models.ManyToManyField(Foods)
 
     def __str__(self):
         return self.category.name

@@ -140,3 +140,10 @@ def table_list(request):
 
     return Response({'tables': serializer.data})
 
+@api_view(['GET'])
+def menu_list(request):
+    if not request.user.is_authenticated:
+        return Response({'error': 'User not authenticated'}, status=401)
+    menu = Menu.objects.select_related('category').prefetch_related('foods')
+    serializer = MenuSerializer(menu, many=True)
+    return Response(serializer.data, status=200)

@@ -9,5 +9,6 @@ urlpatterns = [
     path('cancel/', cancel_booking),
     path('confirm/', confirm_booking),
     path('list_bookings/', booking_list),
-    path('api/tables/', table_list)
+    path('api/tables/', table_list),
+    path('menu/', menu_list),
 ]
