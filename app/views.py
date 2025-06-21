@@ -2,7 +2,6 @@ from datetime import time as booking_time
 
 from django.shortcuts import render
 from drf_yasg.utils import swagger_auto_schema
-from requests import Response
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -14,8 +13,7 @@ from .serializers import *
 class CreateUserAPIView(CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
+
 
 
 @swagger_auto_schema(
