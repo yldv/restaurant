@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Menu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>tailwind.config={theme:{extend:{colors:{primary:'#4F46E5',secondary:'#10B981'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+
+        body {
+            background-color: #f9f9f9;
+        }
+
+        .menu-card {
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .category-tabs::-webkit-scrollbar {
+            height: 0;
+            width: 0;
+            display: none;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Header Section -->
+    <header class="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <a href="/" class="text-3xl font-['Pacifico'] text-primary">Harmony</a>
+            </div>
+<a href="/" class="text-gray-800 hover:text-primary font-medium">Home</a>
+
+            <div class="relative w-1/3">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <div class="w-5 h-5 flex items-center justify-center text-gray-500">
+                        <i class="ri-search-line"></i>
+                    </div>
+                </div>
+                <input type="text" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm" placeholder="Search menu items...">
+            </div>
+
+{#            <div class="flex items-center space-x-4">#}
+{#                <button class="flex items-center space-x-2 px-4 py-2 bg-primary text-white !rounded-button whitespace-nowrap">#}
+{#                    <div class="w-5 h-5 flex items-center justify-center">#}
+{#                        <i class="ri-shopping-cart-line"></i>#}
+{#                    </div>#}
+{#                    <span>My Order</span>#}
+{#                </button>#}
+{#            </div>#}
+        </div>
+    </header>
+
+    <!-- Category Navigation -->
+    <div class="sticky top-16 bg-white z-40 shadow-sm mt-16">
+        <div class="container mx-auto px-4">
+            <div class="category-tabs flex overflow-x-auto py-4 space-x-2 no-scrollbar">
+                <button class="px-6 py-2 bg-primary text-white rounded-full whitespace-nowrap">All</button>
+                {% for categ in category %}
+                <button class="px-6 py-2 bg-gray-100 text-gray-700 rounded-full whitespace-nowrap">{{ categ.name }}</button>
+                {% endfor %}
+{#                <button class="px-6 py-2 bg-gray-100 text-gray-700 rounded-full whitespace-nowrap">Main Course</button>#}
+{#                <button class="px-6 py-2 bg-gray-100 text-gray-700 rounded-full whitespace-nowrap">Pasta & Risotto</button>#}
+{#                <button class="px-6 py-2 bg-gray-100 text-gray-700 rounded-full whitespace-nowrap">Seafood</button>#}
+{#                <button class="px-6 py-2 bg-gray-100 text-gray-700 rounded-full whitespace-nowrap">Steaks & Grills</button>#}
+{#                <button class="px-6 py-2 bg-gray-100 text-gray-700 rounded-full whitespace-nowrap">Desserts</button>#}
+{#                <button class="px-6 py-2 bg-gray-100 text-gray-700 rounded-full whitespace-nowrap">Beverages</button>#}
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 pb-24">
+        <!-- Appetizers Section -->
+        {% for categ in category %}
+        <section id="{{ categ.name }}" class="mb-12">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">
+                <span class="mr-2">{{ categ.name }}</span>
+                <div class="h-px bg-gray-200 flex-grow ml-4"></div>
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- Menu Item 1 -->
+                {#                {% for food in foods %}#}
+                {% if categ.foods.all %}
+                    {% for food in categ.foods.all %}
+                    <div class="menu-card bg-white rounded-lg shadow-sm overflow-hidden flex">
+                        <div class="w-1/3 h-auto">
+                            <img src="https://www.google.com/imgres?q=food&imgurl=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F6%2F6d%2FGood_Food_Display_-_NCI_Visuals_Online.jpg%2F1200px-Good_Food_Display_-_NCI_Visuals_Online.jpg&imgrefurl=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FFood&docid=F4fzcSFVcTK1kM&tbnid=nQBYUAp94s8s4M&vet=12ahUKEwjJkY3XpIiOAxU9U1UIHcC-CdMQM3oECBoQAA..i&w=1200&h=800&hcb=2&ved=2ahUKEwjJkY3XpIiOAxU9U1UIHcC-CdMQM3oECBoQAA">
+                        </div>
+                        <div class="w-2/3 p-4 flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="text-lg font-semibold text-gray-800">{{ food.name }}</h3>
+                                    <span class="font-bold text-primary">${{ food.price }}</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-2">{{ food.description }}</p>
+
+                            </div>
+{#                            <button class="mt-3 px-3 py-1.5 bg-gray-100 text-primary !rounded-button text-sm font-medium whitespace-nowrap">Add to order</button>#}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+                {#                    {% endfor %}#}
+                {##}
+                {#                <!-- Menu Item 2 -->#}
+                {#                <div class="menu-card bg-white rounded-lg shadow-sm overflow-hidden flex">#}
+                {#                    <div class="w-1/3 h-auto">#}
+                {#                        <img src="https://readdy.ai/api/search-image?query=Bruschetta%20with%20diced%20tomatoes%2C%20fresh%20basil%2C%20and%20balsamic%20glaze%20on%20toasted%20bread%2C%20Italian%20appetizer%20on%20a%20rustic%20wooden%20board%2C%20professional%20food%20photography%20with%20natural%20lighting&width=300&height=300&seq=2&orientation=squarish" alt="Classic Bruschetta" class="w-full h-full object-cover object-top">#}
+                {#                    </div>#}
+                {#                    <div class="w-2/3 p-4 flex flex-col justify-between">#}
+                {#                        <div>#}
+                {#                            <div class="flex justify-between items-start mb-2">#}
+                {#                                <h3 class="text-lg font-semibold text-gray-800">Classic Bruschetta</h3>#}
+                {#                                <span class="font-bold text-primary">$9.50</span>#}
+                {#                            </div>#}
+                {#                            <p class="text-sm text-gray-600 mb-2">Toasted artisan bread topped with diced tomatoes, fresh basil, garlic, and balsamic glaze.</p>#}
+                {#                            <div class="flex space-x-2">#}
+                {#                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Vegetarian</span>#}
+                {#                            </div>#}
+                {#                        </div>#}
+                {#                        <button class="mt-3 px-3 py-1.5 bg-gray-100 text-primary !rounded-button text-sm font-medium whitespace-nowrap">Add to order</button>#}
+                {#                    </div>#}
+                {#                </div>#}
+                {##}
+                {#                <!-- Menu Item 3 -->#}
+                {#                <div class="menu-card bg-white rounded-lg shadow-sm overflow-hidden flex">#}
+                {#                    <div class="w-1/3 h-auto">#}
+                {#                        <img src="https://readdy.ai/api/search-image?query=Spinach%20and%20artichoke%20dip%20with%20melted%20cheese%2C%20creamy%20appetizer%20served%20with%20tortilla%20chips%2C%20professional%20food%20photography%20with%20soft%20lighting%20and%20garnish&width=300&height=300&seq=3&orientation=squarish" alt="Spinach Artichoke Dip" class="w-full h-full object-cover object-top">#}
+                {#                    </div>#}
+                {#                    <div class="w-2/3 p-4 flex flex-col justify-between">#}
+                {#                        <div>#}
+                {#                            <div class="flex justify-between items-start mb-2">#}
+                {#                                <h3 class="text-lg font-semibold text-gray-800">Spinach Artichoke Dip</h3>#}
+                {#                                <span class="font-bold text-primary">$11.25</span>#}
+                {#                            </div>#}
+                {#                            <p class="text-sm text-gray-600 mb-2">Creamy blend of spinach, artichokes, and melted cheeses, served with tortilla chips.</p>#}
+                {#                            <div class="flex space-x-2">#}
+                {#                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Vegetarian</span>#}
+                {#                                <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Popular</span>#}
+                {#                            </div>#}
+                {#                        </div>#}
+                {#                        <button class="mt-3 px-3 py-1.5 bg-gray-100 text-primary !rounded-button text-sm font-medium whitespace-nowrap">Add to order</button>#}
+                {#                    </div>#}
+                {#                </div>#}
+                {##}
+                {#                <!-- Menu Item 4 -->#}
+                {#                <div class="menu-card bg-white rounded-lg shadow-sm overflow-hidden flex">#}
+                {#                    <div class="w-1/3 h-auto">#}
+                {#                        <img src="https://readdy.ai/api/search-image?query=Buffalo%20chicken%20wings%20with%20blue%20cheese%20dipping%20sauce%2C%20spicy%20appetizer%20on%20a%20modern%20plate%20with%20celery%20sticks%2C%20professional%20food%20photography%20with%20dramatic%20lighting&width=300&height=300&seq=4&orientation=squarish" alt="Buffalo Wings" class="w-full h-full object-cover object-top">#}
+                {#                    </div>#}
+                {#                    <div class="w-2/3 p-4 flex flex-col justify-between">#}
+                {#                        <div>#}
+                {#                            <div class="flex justify-between items-start mb-2">#}
+                {#                                <h3 class="text-lg font-semibold text-gray-800">Buffalo Wings</h3>#}
+                {#                                <span class="font-bold text-primary">$13.75</span>#}
+                {#                            </div>#}
+                {#                            <p class="text-sm text-gray-600 mb-2">Crispy chicken wings tossed in spicy buffalo sauce, served with blue cheese dip and celery.</p>#}
+                {#                            <div class="flex space-x-2">#}
+                {#                                <span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">Spicy</span>#}
+                {#                                <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Popular</span>#}
+                {#                            </div>#}
+                {#                        </div>#}
+                {#                        <button class="mt-3 px-3 py-1.5 bg-gray-100 text-primary !rounded-button text-sm font-medium whitespace-nowrap">Add to order</button>#}
+                {#                    </div>#}
+                {#                </div>#}
+            </div>
+
+{#            <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">#}
+{#                <span class="mr-2">{{ categ.name }}</span>#}
+{#                <div class="h-px bg-gray-200 flex-grow ml-4"></div>#}
+{#            </h2>#}
+        </section>
+        {% endfor %}
+
+{#        <!-- Main Course Section -->#}
+{#        <section id="main-course" class="mb-12">#}
+{#            <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">#}
+{#                <span class="mr-2">Main Course</span>#}
+{#                <div class="h-px bg-gray-200 flex-grow ml-4"></div>#}
+{#            </h2>#}
+{##}
+{#            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">#}
+{#                <!-- Menu Item 1 -->#}
+{#                <div class="menu-card bg-white rounded-lg shadow-sm overflow-hidden flex">#}
+{#                    <div class="w-1/3 h-auto">#}
+{#                        <img src="https://readdy.ai/api/search-image?query=Grilled%20salmon%20fillet%20with%20asparagus%20and%20lemon%20butter%20sauce%2C%20perfectly%20cooked%20fish%20with%20crispy%20skin%20on%20a%20white%20plate%2C%20professional%20food%20photography%20with%20natural%20lighting&width=300&height=300&seq=5&orientation=squarish" alt="Grilled Salmon" class="w-full h-full object-cover object-top">#}
+{#                    </div>#}
+{#                    <div class="w-2/3 p-4 flex flex-col justify-between">#}
+{#                        <div>#}
+{#                            <div class="flex justify-between items-start mb-2">#}
+{#                                <h3 class="text-lg font-semibold text-gray-800">Grilled Salmon</h3>#}
+{#                                <span class="font-bold text-primary">$24.95</span>#}
+{#                            </div>#}
+{#                            <p class="text-sm text-gray-600 mb-2">Atlantic salmon fillet grilled to perfection, served with asparagus and lemon butter sauce.</p>#}
+{#                            <div class="flex space-x-2">#}
+{#                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Seafood</span>#}
+{#                                <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">Gluten-Free</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <button class="mt-3 px-3 py-1.5 bg-gray-100 text-primary !rounded-button text-sm font-medium whitespace-nowrap">Add to order</button>#}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{#                <!-- Menu Item 2 -->#}
+{#                <div class="menu-card bg-white rounded-lg shadow-sm overflow-hidden flex">#}
+{#                    <div class="w-1/3 h-auto">#}
+{#                        <img src="https://readdy.ai/api/search-image?query=Beef%20tenderloin%20steak%20with%20roasted%20vegetables%20and%20red%20wine%20reduction%2C%20perfectly%20cooked%20medium-rare%20steak%20on%20an%20elegant%20plate%2C%20professional%20food%20photography%20with%20dramatic%20lighting&width=300&height=300&seq=6&orientation=squarish" alt="Filet Mignon" class="w-full h-full object-cover object-top">#}
+{#                    </div>#}
+{#                    <div class="w-2/3 p-4 flex flex-col justify-between">#}
+{#                        <div>#}
+{#                            <div class="flex justify-between items-start mb-2">#}
+{#                                <h3 class="text-lg font-semibold text-gray-800">Filet Mignon</h3>#}
+{#                                <span class="font-bold text-primary">$32.50</span>#}
+{#                            </div>#}
+{#                            <p class="text-sm text-gray-600 mb-2">8oz beef tenderloin cooked to your preference, served with roasted vegetables and red wine reduction.</p>#}
+{#                            <div class="flex space-x-2">#}
+{#                                <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Chef's Special</span>#}
+{#                                <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">Gluten-Free</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <button class="mt-3 px-3 py-1.5 bg-gray-100 text-primary !rounded-button text-sm font-medium whitespace-nowrap">Add to order</button>#}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{#                <!-- Menu Item 3 -->#}
+{#                <div class="menu-card bg-white rounded-lg shadow-sm overflow-hidden flex">#}
+{#                    <div class="w-1/3 h-auto">#}
+{#                        <img src="https://readdy.ai/api/search-image?query=Chicken%20parmesan%20with%20melted%20mozzarella%20and%20marinara%20sauce%20over%20spaghetti%2C%20Italian%20main%20course%20on%20a%20white%20plate%2C%20professional%20food%20photography%20with%20warm%20lighting&width=300&height=300&seq=7&orientation=squarish" alt="Chicken Parmesan" class="w-full h-full object-cover object-top">#}
+{#                    </div>#}
+{#                    <div class="w-2/3 p-4 flex flex-col justify-between">#}
+{#                        <div>#}
+{#                            <div class="flex justify-between items-start mb-2">#}
+{#                                <h3 class="text-lg font-semibold text-gray-800">Chicken Parmesan</h3>#}
+{#                                <span class="font-bold text-primary">$19.95</span>#}
+{#                            </div>#}
+{#                            <p class="text-sm text-gray-600 mb-2">Breaded chicken breast topped with marinara and melted mozzarella, served with spaghetti.</p>#}
+{#                            <div class="flex space-x-2">#}
+{#                                <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">House Favorite</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <button class="mt-3 px-3 py-1.5 bg-gray-100 text-primary !rounded-button text-sm font-medium whitespace-nowrap">Add to order</button>#}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{#                <!-- Menu Item 4 -->#}
+{#                <div class="menu-card bg-white rounded-lg shadow-sm overflow-hidden flex">#}
+{#                    <div class="w-1/3 h-auto">#}
+{#                        <img src="https://readdy.ai/api/search-image?query=Vegetable%20curry%20with%20basmati%20rice%2C%20colorful%20mixed%20vegetables%20in%20aromatic%20curry%20sauce%2C%20vegan%20main%20course%20on%20a%20modern%20plate%2C%20professional%20food%20photography%20with%20vibrant%20colors&width=300&height=300&seq=8&orientation=squarish" alt="Vegetable Curry" class="w-full h-full object-cover object-top">#}
+{#                    </div>#}
+{#                    <div class="w-2/3 p-4 flex flex-col justify-between">#}
+{#                        <div>#}
+{#                            <div class="flex justify-between items-start mb-2">#}
+{#                                <h3 class="text-lg font-semibold text-gray-800">Vegetable Curry</h3>#}
+{#                                <span class="font-bold text-primary">$17.50</span>#}
+{#                            </div>#}
+{#                            <p class="text-sm text-gray-600 mb-2">Aromatic curry with seasonal vegetables and coconut milk, served with basmati rice.</p>#}
+{#                            <div class="flex space-x-2">#}
+{#                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Vegan</span>#}
+{#                                <span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">Spicy</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <button class="mt-3 px-3 py-1.5 bg-gray-100 text-primary !rounded-button text-sm font-medium whitespace-nowrap">Add to order</button>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </section>#}
+{##}
+{#        <!-- Pasta & Risotto Section -->#}
+{#        <section id="pasta" class="mb-12">#}
+{#            <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">#}
+{#                <span class="mr-2">Pasta & Risotto</span>#}
+{#                <div class="h-px bg-gray-200 flex-grow ml-4"></div>#}
+{#            </h2>#}
+{##}
+{#            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">#}
+{#                <!-- Menu Item 1 -->#}
+{#                <div class="menu-card bg-white rounded-lg shadow-sm overflow-hidden flex">#}
+{#                    <div class="w-1/3 h-auto">#}
+{#                        <img src="https://readdy.ai/api/search-image?query=Seafood%20linguine%20with%20shrimp%2C%20mussels%2C%20and%20clams%20in%20white%20wine%20sauce%2C%20Italian%20pasta%20dish%20on%20a%20white%20plate%2C%20professional%20food%20photography%20with%20natural%20lighting&width=300&height=300&seq=9&orientation=squarish" alt="Seafood Linguine" class="w-full h-full object-cover object-top">#}
+{#                    </div>#}
+{#                    <div class="w-2/3 p-4 flex flex-col justify-between">#}
+{#                        <div>#}
+{#                            <div class="flex justify-between items-start mb-2">#}
+{#                                <h3 class="text-lg font-semibold text-gray-800">Seafood Linguine</h3>#}
+{#                                <span class="font-bold text-primary">$23.95</span>#}
+{#                            </div>#}
+{#                            <p class="text-sm text-gray-600 mb-2">Linguine pasta with shrimp, mussels, and clams in a white wine and garlic sauce.</p>#}
+{#                            <div class="flex space-x-2">#}
+{#                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Seafood</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <button class="mt-3 px-3 py-1.5 bg-gray-100 text-primary !rounded-button text-sm font-medium whitespace-nowrap">Add to order</button>#}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{#                <!-- Menu Item 2 -->#}
+{#                <div class="menu-card bg-white rounded-lg shadow-sm overflow-hidden flex">#}
+{#                    <div class="w-1/3 h-auto">#}
+{#                        <img src="https://readdy.ai/api/search-image?query=Mushroom%20risotto%20with%20parmesan%20cheese%20and%20fresh%20herbs%2C%20creamy%20Italian%20rice%20dish%20on%20an%20elegant%20plate%2C%20professional%20food%20photography%20with%20soft%20lighting&width=300&height=300&seq=10&orientation=squarish" alt="Wild Mushroom Risotto" class="w-full h-full object-cover object-top">#}
+{#                    </div>#}
+{#                    <div class="w-2/3 p-4 flex flex-col justify-between">#}
+{#                        <div>#}
+{#                            <div class="flex justify-between items-start mb-2">#}
+{#                                <h3 class="text-lg font-semibold text-gray-800">Wild Mushroom Risotto</h3>#}
+{#                                <span class="font-bold text-primary">$18.50</span>#}
+{#                            </div>#}
+{#                            <p class="text-sm text-gray-600 mb-2">Creamy Arborio rice with wild mushrooms, white wine, and Parmesan cheese.</p>#}
+{#                            <div class="flex space-x-2">#}
+{#                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Vegetarian</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <button class="mt-3 px-3 py-1.5 bg-gray-100 text-primary !rounded-button text-sm font-medium whitespace-nowrap">Add to order</button>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </section>#}
+{##}
+{#        <!-- Desserts Section -->#}
+{#        <section id="desserts" class="mb-12">#}
+{#            <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">#}
+{#                <span class="mr-2">Desserts</span>#}
+{#                <div class="h-px bg-gray-200 flex-grow ml-4"></div>#}
+{#            </h2>#}
+{##}
+{#            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">#}
+{#                <!-- Menu Item 1 -->#}
+{#                <div class="menu-card bg-white rounded-lg shadow-sm overflow-hidden flex">#}
+{#                    <div class="w-1/3 h-auto">#}
+{#                        <img src="https://readdy.ai/api/search-image?query=Tiramisu%20with%20cocoa%20powder%20and%20coffee-soaked%20ladyfingers%2C%20Italian%20dessert%20on%20an%20elegant%20plate%20with%20mint%20garnish%2C%20professional%20food%20photography%20with%20soft%20lighting&width=300&height=300&seq=11&orientation=squarish" alt="Classic Tiramisu" class="w-full h-full object-cover object-top">#}
+{#                    </div>#}
+{#                    <div class="w-2/3 p-4 flex flex-col justify-between">#}
+{#                        <div>#}
+{#                            <div class="flex justify-between items-start mb-2">#}
+{#                                <h3 class="text-lg font-semibold text-gray-800">Classic Tiramisu</h3>#}
+{#                                <span class="font-bold text-primary">$9.95</span>#}
+{#                            </div>#}
+{#                            <p class="text-sm text-gray-600 mb-2">Coffee-soaked ladyfingers layered with mascarpone cream and dusted with cocoa powder.</p>#}
+{#                            <div class="flex space-x-2">#}
+{#                                <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Popular</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <button class="mt-3 px-3 py-1.5 bg-gray-100 text-primary !rounded-button text-sm font-medium whitespace-nowrap">Add to order</button>#}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{#                <!-- Menu Item 2 -->#}
+{#                <div class="menu-card bg-white rounded-lg shadow-sm overflow-hidden flex">#}
+{#                    <div class="w-1/3 h-auto">#}
+{#                        <img src="https://readdy.ai/api/search-image?query=Chocolate%20lava%20cake%20with%20vanilla%20ice%20cream%20and%20raspberry%20sauce%2C%20warm%20dessert%20with%20molten%20chocolate%20center%2C%20professional%20food%20photography%20with%20dramatic%20lighting&width=300&height=300&seq=12&orientation=squarish" alt="Chocolate Lava Cake" class="w-full h-full object-cover object-top">#}
+{#                    </div>#}
+{#                    <div class="w-2/3 p-4 flex flex-col justify-between">#}
+{#                        <div>#}
+{#                            <div class="flex justify-between items-start mb-2">#}
+{#                                <h3 class="text-lg font-semibold text-gray-800">Chocolate Lava Cake</h3>#}
+{#                                <span class="font-bold text-primary">$10.50</span>#}
+{#                            </div>#}
+{#                            <p class="text-sm text-gray-600 mb-2">Warm chocolate cake with a molten center, served with vanilla ice cream and raspberry sauce.</p>#}
+{#                            <div class="flex space-x-2">#}
+{#                                <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Popular</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <button class="mt-3 px-3 py-1.5 bg-gray-100 text-primary !rounded-button text-sm font-medium whitespace-nowrap">Add to order</button>#}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{#                <!-- Menu Item 3 -->#}
+{#                <div class="menu-card bg-white rounded-lg shadow-sm overflow-hidden flex">#}
+{#                    <div class="w-1/3 h-auto">#}
+{#                        <img src="https://readdy.ai/api/search-image?query=New%20York%20cheesecake%20with%20fresh%20berries%20and%20berry%20coulis%2C%20creamy%20dessert%20on%20a%20white%20plate%20with%20mint%20garnish%2C%20professional%20food%20photography%20with%20soft%20lighting&width=300&height=300&seq=13&orientation=squarish" alt="New York Cheesecake" class="w-full h-full object-cover object-top">#}
+{#                    </div>#}
+{#                    <div class="w-2/3 p-4 flex flex-col justify-between">#}
+{#                        <div>#}
+{#                            <div class="flex justify-between items-start mb-2">#}
+{#                                <h3 class="text-lg font-semibold text-gray-800">New York Cheesecake</h3>#}
+{#                                <span class="font-bold text-primary">$8.95</span>#}
+{#                            </div>#}
+{#                            <p class="text-sm text-gray-600 mb-2">Creamy cheesecake with a graham cracker crust, topped with fresh berries and berry coulis.</p>#}
+{#                        </div>#}
+{#                        <button class="mt-3 px-3 py-1.5 bg-gray-100 text-primary !rounded-button text-sm font-medium whitespace-nowrap">Add to order</button>#}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{#                <!-- Menu Item 4 -->#}
+{#                <div class="menu-card bg-white rounded-lg shadow-sm overflow-hidden flex">#}
+{#                    <div class="w-1/3 h-auto">#}
+{#                        <img src="https://readdy.ai/api/search-image?query=Cr%C3%A8me%20br%C3%BBl%C3%A9e%20with%20caramelized%20sugar%20top%20and%20fresh%20berries%2C%20French%20custard%20dessert%20in%20a%20ramekin%2C%20professional%20food%20photography%20with%20warm%20lighting&width=300&height=300&seq=14&orientation=squarish" alt="Crème Brûlée" class="w-full h-full object-cover object-top">#}
+{#                    </div>#}
+{#                    <div class="w-2/3 p-4 flex flex-col justify-between">#}
+{#                        <div>#}
+{#                            <div class="flex justify-between items-start mb-2">#}
+{#                                <h3 class="text-lg font-semibold text-gray-800">Crème Brûlée</h3>#}
+{#                                <span class="font-bold text-primary">$9.25</span>#}
+{#                            </div>#}
+{#                            <p class="text-sm text-gray-600 mb-2">Rich vanilla custard with a caramelized sugar crust, served with fresh berries.</p>#}
+{#                            <div class="flex space-x-2">#}
+{#                                <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">Gluten-Free</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <button class="mt-3 px-3 py-1.5 bg-gray-100 text-primary !rounded-button text-sm font-medium whitespace-nowrap">Add to order</button>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </section>#}
+{##}
+{#        <!-- Beverages Section -->#}
+{#        <section id="beverages">#}
+{#            <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">#}
+{#                <span class="mr-2">Beverages</span>#}
+{#                <div class="h-px bg-gray-200 flex-grow ml-4"></div>#}
+{#            </h2>#}
+{##}
+{#            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">#}
+{#                <!-- Menu Item 1 -->#}
+{#                <div class="menu-card bg-white rounded-lg shadow-sm overflow-hidden flex">#}
+{#                    <div class="w-1/3 h-auto">#}
+{#                        <img src="https://readdy.ai/api/search-image?query=Craft%20cocktail%20with%20fresh%20ingredients%20and%20garnish%2C%20colorful%20mixed%20drink%20in%20an%20elegant%20glass%2C%20professional%20beverage%20photography%20with%20soft%20lighting&width=300&height=300&seq=15&orientation=squarish" alt="Signature Cocktails" class="w-full h-full object-cover object-top">#}
+{#                    </div>#}
+{#                    <div class="w-2/3 p-4 flex flex-col justify-between">#}
+{#                        <div>#}
+{#                            <div class="flex justify-between items-start mb-2">#}
+{#                                <h3 class="text-lg font-semibold text-gray-800">Signature Cocktails</h3>#}
+{#                                <span class="font-bold text-primary">$12.00</span>#}
+{#                            </div>#}
+{#                            <p class="text-sm text-gray-600 mb-2">Selection of handcrafted cocktails made with premium spirits and fresh ingredients.</p>#}
+{#                            <div class="flex space-x-2">#}
+{#                                <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Popular</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <button class="mt-3 px-3 py-1.5 bg-gray-100 text-primary !rounded-button text-sm font-medium whitespace-nowrap">Add to order</button>#}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{#                <!-- Menu Item 2 -->#}
+{#                <div class="menu-card bg-white rounded-lg shadow-sm overflow-hidden flex">#}
+{#                    <div class="w-1/3 h-auto">#}
+{#                        <img src="https://readdy.ai/api/search-image?query=Selection%20of%20fine%20wines%20in%20elegant%20wine%20glasses%2C%20red%20and%20white%20wine%20with%20grapes%20and%20cheese%20pairing%2C%20professional%20beverage%20photography%20with%20soft%20lighting&width=300&height=300&seq=16&orientation=squarish" alt="Wine Selection" class="w-full h-full object-cover object-top">#}
+{#                    </div>#}
+{#                    <div class="w-2/3 p-4 flex flex-col justify-between">#}
+{#                        <div>#}
+{#                            <div class="flex justify-between items-start mb-2">#}
+{#                                <h3 class="text-lg font-semibold text-gray-800">Wine Selection</h3>#}
+{#                                <span class="font-bold text-primary">$9.00 - $15.00</span>#}
+{#                            </div>#}
+{#                            <p class="text-sm text-gray-600 mb-2">Curated selection of red, white, and sparkling wines available by the glass or bottle.</p>#}
+{#                        </div>#}
+{#                        <button class="mt-3 px-3 py-1.5 bg-gray-100 text-primary !rounded-button text-sm font-medium whitespace-nowrap">Add to order</button>#}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{#                <!-- Menu Item 3 -->#}
+{#                <div class="menu-card bg-white rounded-lg shadow-sm overflow-hidden flex">#}
+{#                    <div class="w-1/3 h-auto">#}
+{#                        <img src="https://readdy.ai/api/search-image?query=Freshly%20brewed%20coffee%20with%20latte%20art%20in%20a%20white%20cup%2C%20espresso-based%20drink%20on%20a%20saucer%20with%20coffee%20beans%2C%20professional%20beverage%20photography%20with%20warm%20lighting&width=300&height=300&seq=17&orientation=squarish" alt="Specialty Coffee" class="w-full h-full object-cover object-top">#}
+{#                    </div>#}
+{#                    <div class="w-2/3 p-4 flex flex-col justify-between">#}
+{#                        <div>#}
+{#                            <div class="flex justify-between items-start mb-2">#}
+{#                                <h3 class="text-lg font-semibold text-gray-800">Specialty Coffee</h3>#}
+{#                                <span class="font-bold text-primary">$4.50 - $6.50</span>#}
+{#                            </div>#}
+{#                            <p class="text-sm text-gray-600 mb-2">Freshly brewed coffee, espresso, cappuccino, latte, and more made with premium beans.</p>#}
+{#                        </div>#}
+{#                        <button class="mt-3 px-3 py-1.5 bg-gray-100 text-primary !rounded-button text-sm font-medium whitespace-nowrap">Add to order</button>#}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{#                <!-- Menu Item 4 -->#}
+{#                <div class="menu-card bg-white rounded-lg shadow-sm overflow-hidden flex">#}
+{#                    <div class="w-1/3 h-auto">#}
+{#                        <img src="https://readdy.ai/api/search-image?query=Fresh%20fruit%20smoothies%20in%20tall%20glasses%20with%20fruit%20garnish%2C%20colorful%20healthy%20beverages%20with%20straws%2C%20professional%20beverage%20photography%20with%20bright%20lighting&width=300&height=300&seq=18&orientation=squarish" alt="Fresh Smoothies" class="w-full h-full object-cover object-top">#}
+{#                    </div>#}
+{#                    <div class="w-2/3 p-4 flex flex-col justify-between">#}
+{#                        <div>#}
+{#                            <div class="flex justify-between items-start mb-2">#}
+{#                                <h3 class="text-lg font-semibold text-gray-800">Fresh Smoothies</h3>#}
+{#                                <span class="font-bold text-primary">$7.50</span>#}
+{#                            </div>#}
+{#                            <p class="text-sm text-gray-600 mb-2">Refreshing smoothies made with fresh fruits, yogurt, and honey. Ask for today's flavors.</p>#}
+{#                            <div class="flex space-x-2">#}
+{#                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Healthy</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <button class="mt-3 px-3 py-1.5 bg-gray-100 text-primary !rounded-button text-sm font-medium whitespace-nowrap">Add to order</button>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </section>#}
+    </main>
+
+    <!-- Back to Top Button -->
+    <div id="back-to-top" class="fixed bottom-6 right-6 w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center shadow-lg cursor-pointer opacity-0 transition-opacity duration-300">
+        <div class="w-6 h-6 flex items-center justify-center">
+            <i class="ri-arrow-up-line"></i>
+        </div>
+    </div>
+    <script id="category-navigation">
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoryButtons = document.querySelectorAll('.category-tabs button');
+            const sections = document.querySelectorAll('main section');
+
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    categoryButtons.forEach(btn => {
+                        btn.classList.remove('bg-primary', 'text-white');
+                        btn.classList.add('bg-gray-100', 'text-gray-700');
+                    });
+
+                    // Add active class to clicked button
+                    this.classList.remove('bg-gray-100', 'text-gray-700');
+                    this.classList.add('bg-primary', 'text-white');
+
+                    // Get the category from the button text
+                    const category = this.textContent.trim().toLowerCase();
+
+                    if (category === 'all') {
+                        // Show all sections
+                        sections.forEach(section => {
+                            section.style.display = 'block';
+                        });
+                    } else {
+                        // Show only the selected section
+                        sections.forEach(section => {
+                            const sectionId = section.id.toLowerCase();
+                            if (category.includes(sectionId) || sectionId.includes(category)) {
+                                section.style.display = 'block';
+                            } else {
+                                section.style.display = 'none';
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script id="back-to-top-functionality">
+        document.addEventListener('DOMContentLoaded', function() {
+            const backToTopButton = document.getElementById('back-to-top');
+
+            // Show/hide back to top button based on scroll position
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    backToTopButton.classList.remove('opacity-0');
+                    backToTopButton.classList.add('opacity-100');
+                } else {
+                    backToTopButton.classList.remove('opacity-100');
+                    backToTopButton.classList.add('opacity-0');
+                }
+            });
+
+            // Scroll to top when button is clicked
+            backToTopButton.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+
+    <script id="search-functionality">
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.querySelector('input[type="text"]');
+            const menuCards = document.querySelectorAll('.menu-card');
+
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+
+                menuCards.forEach(card => {
+                    const dishName = card.querySelector('h3').textContent.toLowerCase();
+                    const description = card.querySelector('p').textContent.toLowerCase();
+                    const tags = Array.from(card.querySelectorAll('.rounded-full')).map(tag => tag.textContent.toLowerCase());
+
+                    if (searchTerm === '' ||
+                        dishName.includes(searchTerm) ||
+                        description.includes(searchTerm) ||
+                        tags.some(tag => tag.includes(searchTerm))) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Check if any cards are visible in each section
+                document.querySelectorAll('main section').forEach(section => {
+                    const visibleCards = Array.from(section.querySelectorAll('.menu-card')).filter(card => card.style.display !== 'none');
+
+                    if (visibleCards.length === 0) {
+                        section.style.display = 'none';
+                    } else {
+                        section.style.display = 'block';
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script id="order-functionality">
+        document.addEventListener('DOMContentLoaded', function() {
+            const addToOrderButtons = document.querySelectorAll('.menu-card button');
+
+            addToOrderButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const card = this.closest('.menu-card');
+                    const dishName = card.querySelector('h3').textContent;
+                    const price = card.querySelector('.font-bold').textContent;
+
+                    // Change button text temporarily to show confirmation
+                    const originalText = this.textContent;
+                    this.textContent = 'Added!';
+                    this.classList.remove('bg-gray-100', 'text-primary');
+                    this.classList.add('bg-green-500', 'text-white');
+
+                    // Reset button after 1 second
+                    setTimeout(() => {
+                        this.textContent = originalText;
+                        this.classList.remove('bg-green-500', 'text-white');
+                        this.classList.add('bg-gray-100', 'text-primary');
+                    }, 1000);
+
+                    // Here you would normally add the item to a cart object
+                    console.log(`Added to order: ${dishName} - ${price}`);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 from datetime import time as booking_time
-
-from django.shortcuts import render
+from unicodedata import category
+import requests
+from django.shortcuts import render, redirect
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.response import Response
@@ -37,44 +38,52 @@ def login_in(request):
     return Response({'user': f'{username} Login successful'}, status=200)
 
 
-@swagger_auto_schema(
-    method='post',
-    request_body=BookingSerializer,
-    responses={200: 'Booking successful'}
-)
-@api_view(['POST'])
+
+TELEGRAM_BOT_TOKEN = "8139875975:AAGC51DKfkAe0lk-pm2q92vKD2xc8TeiL_o"
+TELEGRAM_CHAT_ID = "7025342701"
+BASE_URL = "https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}"
 def booking(request):
     if not request.user.is_authenticated:
-        return Response({'error': 'User not authenticated'}, status=401)
-    serializer = BookingSerializer(data=request.data)
-    if serializer.is_valid():
-        table = serializer.validated_data['table']
-        date = serializer.validated_data['date']
-        time = serializer.validated_data['time']
+        return render(request, 'base_site.html', {'error': 'User not authenticated'}, status=401)
 
-        if table.is_reserved:
-            return Response({'error': 'This table is already reserved'}, status=400)
+    if request.method == 'POST':
+        serializer = BookingSerializer(data=request.POST)
+        if serializer.is_valid():
+            table = serializer.validated_data['table']
+            date = serializer.validated_data['date']
+            time = serializer.validated_data['time']
+            phone = serializer.validated_data['phone']
 
-        if not booking_time(9, 0) <= time <= booking_time(22, 0):
-            return Response({'error': 'Booking only allowed between 09:00 and 22:00'}, status=400)
+            if table.is_reserved:
+                return render(request, 'base_site.html', {'error': 'Table is already reserved'}, status=400)
 
-        user = request.user
+            if not booking_time(9, 0) <= time <= booking_time(22, 0):
+                return render(request, 'base_site.html', {'error': 'Booking only allowed between 09:00 and 22:00'}, status=400)
 
-        booking = Booking.objects.create(
-            user=user,
-            table=table,
-            date=date,
-            time=time,
-            status='pending'
-        )
+            booking = Booking.objects.create(
+                user=request.user,
+                table=table,
+                date=date,
+                time=time,
+                status='pending',
+                phone=phone
+            )
 
-        table.is_reserved = True
-        table.save()
+            table.is_reserved = True
+            table.save()
+            res = requests.get(BASE_URL.format(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID,
+                                               f"name: {request.user} \nemail: {table} \nnumber: {date} \nmessage:{time} \nphone: {phone}"))
+            # Successful booking, redirect to avoid form resubmission
+            return render(request, 'base_site.html', {'booking': booking}, status=200)
+        return redirect('/menu/')
 
-        return Response({'booking': f'{booking} Booking successful'}, status=200)
-
-    return Response(serializer.errors, status=400)
-
+    # GET method
+    tables = Table.objects.all()
+    success = request.GET.get('success')
+    context = {'table': tables}
+    if success:
+        context['success'] = 'Reservation successfully submitted!'
+    return render(request, 'base_site.html', context)
 
 @api_view(['POST'])
 def cancel_booking(request):
@@ -129,19 +138,54 @@ def booking_list(request):
     return Response(serializer.data)
 
 
-@api_view(['GET'])
 def table_list(request):
-    if not request.user.is_authenticated:
-        return Response({'error': 'User not authenticated'}, status=401)
-    table = Table.objects.all()
-    serializer = TableSerializer(table, many=True)
+    if request.method == 'GET':
+        if not request.user.is_authenticated:
+            return render(request, 'base_site.html', {'error': 'User not authenticated'}, status=401)
+        table = Table.objects.all()
+        return render(request, 'base_site.html', {'table': table}, status=200)
+    return render(request, 'base_site.html')
 
-    return Response({'tables': serializer.data})
-
-@api_view(['GET'])
 def menu_list(request):
+    if request.method == 'GET':
+        if not request.user.is_authenticated:
+            return render(request, 'menu.html', context={'error': 'User not authenticated'}, status=401)
+        menu = Menu.objects.select_related('category').prefetch_related('foods')
+        category = Category.objects.all()
+        serializer = MenuSerializer(menu, many=True)
+        foods = Foods.objects.filter(category__in=category)
+        return render(request, 'menu.html', {'menu': serializer.data, 'category': category, 'foods': foods}, status=200)
+
+
+@swagger_auto_schema(
+    method='post',
+    request_body=FoodSerializer,
+    responses={200:FoodSerializer(many=True)},
+)
+@api_view(['POST'])
+def add_food(request):
     if not request.user.is_authenticated:
         return Response({'error': 'User not authenticated'}, status=401)
-    menu = Menu.objects.select_related('category').prefetch_related('foods')
-    serializer = MenuSerializer(menu, many=True)
-    return Response(serializer.data, status=200)
+    if not request.user.is_staff:
+        return Response({'error': 'Only admins can add foods'}, status=403)
+    serializer = FoodSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=200)
+
+
+
+
+def contact_view(request):
+    if request.method == "POST":
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        number = request.POST.get("number")
+        message = request.POST.get("message")
+
+        obj = Contact.objects.create(name=name, email=email, number=number, message=message)
+        obj.save()
+        res = requests.get(BASE_URL.format(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID,
+                                                    f"name: {name} \nemail: {email} \nnumber: {number} \nmessage:{message}"))
+        return redirect('/')
+    return render(request, "contact.html")

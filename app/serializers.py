@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
 class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
-        fields = ['table', 'date', 'time']
+        fields = ['table', 'date', 'time', 'phone']
 
 class TableSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,7 +19,7 @@ class TableSerializer(serializers.ModelSerializer):
 class FoodSerializer(serializers.ModelSerializer):
     class Meta:
         model = Foods
-        fields = ['id', 'name', 'price']
+        fields = ['id', 'name', 'category', 'price', 'picture']
 
 
 
