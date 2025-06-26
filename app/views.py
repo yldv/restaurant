@@ -170,7 +170,7 @@ def booking_swagger(request):
         date = serializer.validated_data['date']
         time = serializer.validated_data['time']
         phone = serializer.validated_data['phone']
-        if table.is_reserved == True:
+        if table.is_reserved:
             return Response({'error': 'Table is already reserved'}, status=400)
         if not booking_time(9, 0) <= time <= booking_time(22, 0):
             return Response({'error': 'Booking only allowed between 09:00 and 22:00'}, status=400)
