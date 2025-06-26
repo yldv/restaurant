@@ -311,8 +311,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        console.log(tableNumber, reservationDate, reservationTime, phoneNumber)
 
-        fetch('/booking/', {
+        fetch('/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
