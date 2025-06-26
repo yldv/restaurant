@@ -29,3 +29,10 @@ class MenuSerializer(serializers.ModelSerializer):
     class Meta:
         model = Menu
         fields = ['id', 'category', 'foods']
+
+
+class CancelBookingSerializer(serializers.Serializer):
+    booking_id = serializers.IntegerField()
+    class Meta:
+        model = Booking
+        fields = ['booking_id']

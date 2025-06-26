@@ -52,6 +52,13 @@ grid-template-columns: repeat(8, 1fr);
 <nav class="hidden md:flex space-x-8">
 <a href="/menu/" class="text-gray-800 hover:text-primary font-medium">Menu</a>
 <a href="/contact/" class="text-gray-800 hover:text-primary font-medium">Contact</a>
+    {% if not user %}
+    <a href="/sign_in/" class="text-gray-800 hover:text-primary font-medium">Sign_in</a>
+<a href="/sign_up/" class="text-gray-800 hover:text-primary font-medium">Sign_up</a>
+    {% else %}
+        <a href="/logout/" class="text-danger-900 hover:text-primary font-medium">log_out</a>
+    {% endif %}
+
 </nav>
 <button class="md:hidden w-10 h-10 flex items-center justify-center">
 <i class="ri-menu-line text-xl"></i>
@@ -77,24 +84,19 @@ grid-template-columns: repeat(8, 1fr);
 </div>
 <div class="table-grid" id="tableGrid">
     {% for tab in table %}
-        {% if tab.is_reserved == False %}
-<div class="table-item flex flex-col items-center justify-center rounded-lg cursor-pointer bg-primary text-white" data-table-id="1" data-is-reserved="false">
-<div class="text-xl font-bold">{{ tab.name }}</div>
-<div class="text-sm mt-1">{{ tab.capacity }} seats</div>
-</div>
-        {% else %}
-<div class="table-item flex flex-col items-center justify-center rounded-lg cursor-pointer bg-secondary text-white" data-table-id="2" data-is-reserved="true">
-<div class="text-xl font-bold">{{ tab.name }}</div>
-<div class="text-sm mt-1">{{ tab.capacity }} seats</div>
-</div>
-        {% endif %}
+        <div class="table-item flex flex-col items-center justify-center rounded-lg cursor-pointer {% if tab.is_reserved %}bg-secondary{% else %}bg-primary{% endif %} text-white"
+             data-table-id="{{ tab.id }}"
+             data-is-reserved="{{ tab.is_reserved|yesno:'true,false' }}">
+            <div class="text-xl font-bold">{{ tab.name }}</div>
+            <div class="text-sm mt-1">{{ tab.capacity }} seats</div>
+        </div>
     {% endfor %}
 </div>
 </div>
 </section>
 <section class="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto">
 <h3 class="text-2xl font-bold text-gray-800 mb-6">Make a Reservation</h3>
-<form action="" method="post" id="reservationForm" class="space-y-6">
+<form action="/" method="post" id="reservationForm" class="space-y-6">
     {% csrf_token %}
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 <div>
@@ -247,88 +249,100 @@ Confirm Reservation
 </div>
 <script id="tableDataScript">
 document.addEventListener('DOMContentLoaded', function() {
-const tables = Array.from(document.querySelectorAll('.table-item')).map(el => ({
-id: parseInt(el.dataset.tableId),
-number: parseInt(el.dataset.tableId),
-isReserved: el.dataset.isReserved === 'true',
-capacity: parseInt(el.querySelector('.text-sm').textContent)
-}));
+  const tables = Array.from(document.querySelectorAll('.table-item')).map(el => ({
+    id: parseInt(el.dataset.tableId),
+    number: parseInt(el.dataset.tableId),
+    isReserved: el.dataset.isReserved === 'true',
+    capacity: parseInt(el.querySelector('.text-sm').textContent)
+  }));
 
-document.querySelectorAll('.table-item[data-is-reserved="false"]').forEach(tableElement => {
-tableElement.addEventListener('click', () => {
-const tableId = parseInt(tableElement.dataset.tableId);
-const table = tables.find(t => t.id === tableId);
-if (table) {
-selectTable(table);
-}
+  document.querySelectorAll('.table-item[data-is-reserved="false"]').forEach(tableElement => {
+    tableElement.addEventListener('click', () => {
+      const tableId = parseInt(tableElement.dataset.tableId);
+      const table = tables.find(t => t.id === tableId);
+      if (table) {
+        selectTable(table);
+      }
+    });
+  });
+
+  function selectTable(table) {
+    const tableInput = document.getElementById('tableNumber');
+    if (tableInput) {
+      tableInput.value = table.id;
+    }
+
+    document.querySelectorAll('.table-item').forEach(el => {
+      if (el.dataset.isReserved === 'false') {
+        el.classList.remove('ring-4', 'ring-blue-500');
+      }
+    });
+
+    const selectedTableElement = document.querySelector(`.table-item[data-table-id="${table.id}"]`);
+    if (selectedTableElement) {
+      selectedTableElement.classList.add('ring-4', 'ring-blue-500');
+    }
+
+    document.getElementById('reservationForm').scrollIntoView({ behavior: 'smooth' });
+  }
 });
-});
-});
-</script>
-function selectTable(table) {
-// Update form with selected table
-document.getElementById('tableNumber').value = table.number;
-// Highlight selected table
-document.querySelectorAll('.table-item').forEach(el => {
-if (el.dataset.isReserved === 'false') {
-el.classList.remove('ring-4', 'ring-blue-500');
-}
-});
-const selectedTableElement = document.querySelector(`.table-item[data-table-id="${table.id}"]`);
-selectedTableElement.classList.add('ring-4', 'ring-blue-500');
-// Scroll to form
-document.getElementById('reservationForm').scrollIntoView({ behavior: 'smooth' });
-}
 </script>
 <script id="formHandlerScript">
-document.addEventListener('DOMContentLoaded', function() {
-const reservationForm = document.getElementById('reservationForm');
-// Set minimum date to today
-const today = new Date();
-const formattedDate = today.toISOString().split('T')[0];
-document.getElementById('reservationDate').min = formattedDate;
-document.getElementById('reservationDate').value = formattedDate;
-reservationForm.addEventListener('submit', function(e) {
-e.preventDefault();
-const tableNumber = document.getElementById('tableNumber').value;
-const guestName = document.getElementById('guestName').value;
-const reservationDate = document.getElementById('reservationDate').value;
-const reservationTime = document.getElementById('reservationTime').value;
-const phoneNumber = document.getElementById('phoneNumber').value;
-if (!tableNumber || !guestName || !reservationDate || !reservationTime || !phoneNumber) {
-showNotification('Error', 'Please fill in all required fields.', 'error');
-return;
-}
-// Find the table and mark it as reserved
-const tableIndex = tables.findIndex(t => t.number == tableNumber);
-if (tableIndex !== -1) {
-tables[tableIndex].isReserved = true;
-// Update the UI
-const tableElement = document.querySelector(`.table-item[data-table-id="${tables[tableIndex].id}"]`);
-tableElement.classList.remove('bg-primary');
-tableElement.classList.add('bg-secondary');
-tableElement.dataset.isReserved = 'true';
-tableElement.removeEventListener('click', selectTable);
-tableElement.classList.remove('ring-4', 'ring-blue-500');
-// Show success message
-showNotification('Reservation Confirmed', `Thank you ${guestName}! Your reservation for Table #${tableNumber} on ${formatDate(reservationDate)} at ${formatTime(reservationTime)} has been confirmed.`, 'success');
-// Reset form
-reservationForm.reset();
-document.getElementById('reservationDate').value = formattedDate;
-}
+document.addEventListener('DOMContentLoaded', function () {
+    const reservationForm = document.getElementById('reservationForm');
+
+    // Set today's date as min date
+    const today = new Date();
+    const formattedDate = today.toISOString().split('T')[0];
+    document.getElementById('reservationDate').min = formattedDate;
+    document.getElementById('reservationDate').value = formattedDate;
+
+    reservationForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const tableNumber = document.getElementById('tableNumber').value;
+        const reservationDate = document.getElementById('reservationDate').value;
+        const reservationTime = document.getElementById('reservationTime').value;
+        const phoneNumber = document.getElementById('phoneNumber').value;
+
+        if (!tableNumber || !reservationDate || !reservationTime || !phoneNumber) {
+            showNotification('Error', 'Please fill in all required fields.', 'error');
+            return;
+        }
+
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        fetch('/booking/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': csrftoken,
+            },
+            body: new URLSearchParams({
+                table: tableNumber,
+                date: reservationDate,
+                time: reservationTime,
+                phone: phoneNumber
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.text();  // Agar backend HTML qaytarsa
+            } else {
+                throw new Error('Reservation failed');
+            }
+        })
+        .then(data => {
+            showNotification('Success', 'Reservation successfully submitted!', 'success');
+            reservationForm.reset();
+            document.getElementById('reservationDate').value = formattedDate;
+        })
+        .catch(error => {
+            console.error(error);
+            showNotification('Error', 'Reservation failed. Try again later.', 'error');
+        });
+    });
 });
-});
-function formatDate(dateString) {
-const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-return new Date(dateString).toLocaleDateString('en-US', options);
-}
-function formatTime(timeString) {
-const [hours, minutes] = timeString.split(':');
-const hour = parseInt(hours);
-const ampm = hour >= 12 ? 'PM' : 'AM';
-const hour12 = hour % 12 || 12;
-return `${hour12}:${minutes} ${ampm}`;
-}
 </script>
 <script id="notificationScript">
 function showNotification(title, message, type) {

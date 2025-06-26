@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Restaurant Login & Register</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#2563eb',secondary:'#60a5fa'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+body {
+background-image: url('https://readdy.ai/api/search-image?query=modern%20restaurant%20interior%20with%20cool%20blue%20lighting%20and%20white%20marble%20surfaces.%20The%20space%20features%20sleek%20furniture%20and%20minimalist%20decor.%20The%20lighting%20creates%20a%20sophisticated%20and%20contemporary%20atmosphere%20with%20a%20focus%20on%20blue%20and%20white%20tones.%20The%20design%20is%20clean%20and%20elegant&width=1920&height=1080&seq=restaurant-bg-blue&orientation=landscape');
+background-size: cover;
+background-position: center;
+height: 100vh;
+}
+.show-password-toggle:focus {
+outline: none;
+}
+input[type="checkbox"] {
+appearance: none;
+-webkit-appearance: none;
+width: 18px;
+height: 18px;
+border: 2px solid #e2e8f0;
+border-radius: 4px;
+position: relative;
+cursor: pointer;
+}
+input[type="checkbox"]:checked {
+background-color: #2563eb;
+border-color: #2563eb;
+}
+input[type="checkbox"]:checked::after {
+content: "";
+position: absolute;
+top: 2px;
+left: 5px;
+width: 6px;
+height: 10px;
+border: solid white;
+border-width: 0 2px 2px 0;
+transform: rotate(45deg);
+}
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+display: none;
+}
+</style>
+</head>
+<body class="flex items-center justify-center">
+<div id="loginForm" class="hidden bg-white/95 p-8 rounded-lg shadow-xl w-full max-w-md mx-4">
+<div class="text-center mb-8">
+<h1 class="font-['Pacifico'] text-4xl text-primary mb-2">logo</h1>
+<h2 class="text-2xl font-bold text-gray-800 mb-1">Welcome Back</h2>
+<p class="text-gray-600">Sign in to continue</p>
+</div>
+<form class="space-y-6">
+<div>
+<label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username or Email</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none w-10 h-full flex items-center justify-center">
+<i class="ri-user-line text-gray-400"></i>
+</div>
+<input type="text" id="username" name="username" placeholder="Enter your username/email" class="pl-10 w-full h-12 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none px-4">
+</div>
+</div>
+<div>
+<label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none w-10 h-full flex items-center justify-center">
+<i class="ri-lock-line text-gray-400"></i>
+</div>
+<input type="password" id="password" name="password" placeholder="Enter your password" class="pl-10 pr-10 w-full h-12 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none px-4">
+<button type="button" class="show-password-toggle absolute inset-y-0 right-0 pr-3 flex items-center w-10 h-full flex items-center justify-center">
+<i class="ri-eye-line text-gray-400"></i>
+</button>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center">
+<input type="checkbox" id="remember" name="remember" class="mr-2">
+<label for="remember" class="text-sm text-gray-600">Remember me</label>
+</div>
+<a href="#" class="text-sm text-primary hover:text-primary/80">Forgot Password?</a>
+</div>
+<button type="submit" class="w-full bg-primary text-white py-3 rounded-button hover:bg-primary/90 transition duration-200 font-medium !rounded-button whitespace-nowrap">Sign In</button>
+<div class="relative flex items-center justify-center my-6">
+<div class="border-t border-gray-300 absolute w-full"></div>
+<span class="bg-white px-4 text-sm text-gray-500 relative">Or sign in with</span>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<button type="button" class="flex items-center justify-center gap-2 border border-gray-300 py-2.5 rounded-button hover:bg-gray-50 transition duration-200 !rounded-button whitespace-nowrap">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-google-fill text-[#4285F4]"></i>
+</div>
+<span class="text-gray-700">Google</span>
+</button>
+<button type="button" class="flex items-center justify-center gap-2 border border-gray-300 py-2.5 rounded-button hover:bg-gray-50 transition duration-200 !rounded-button whitespace-nowrap">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-facebook-fill text-[#1877F2]"></i>
+</div>
+<span class="text-gray-700">Facebook</span>
+</button>
+</div>
+</form>
+<div class="text-center mt-8">
+<p class="text-gray-600">Don't have an account? <a href="#" class="text-primary hover:text-primary/80 font-medium toggle-form">Sign Up</a></p>
+</div>
+</div>
+<div id="registerForm" class="bg-white/95 p-8 rounded-lg shadow-xl w-full max-w-md mx-4">
+<div class="text-center mb-8">
+<h1 class="font-['Pacifico'] text-4xl text-primary mb-2">logo</h1>
+<h2 class="text-2xl font-bold text-gray-800 mb-1">Create Account</h2>
+<p class="text-gray-600">Sign up to get started</p>
+</div>
+<form action="/sign_up/" class="space-y-6">
+    {% csrf_token %}
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none w-10 h-full flex items-center justify-center">
+<i class="ri-user-line text-gray-400"></i>
+</div>
+<input type="text" id="firstName" name="first_name" placeholder="First Name" class="pl-10 w-full h-12 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none px-4">
+</div>
+</div>
+<div>
+<label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none w-10 h-full flex items-center justify-center">
+<i class="ri-user-line text-gray-400"></i>
+</div>
+<input type="text" id="lastName" name="last_name" placeholder="Last Name" class="pl-10 w-full h-12 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none px-4">
+</div>
+</div>
+</div>
+<div>
+<label for="registerEmail" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none w-10 h-full flex items-center justify-center">
+<i class="ri-mail-line text-gray-400"></i>
+</div>
+<input type="email" id="registerEmail" name="email" placeholder="Enter your email" class="pl-10 w-full h-12 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none px-4">
+</div>
+</div>
+<div>
+<label for="registerPassword" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none w-10 h-full flex items-center justify-center">
+<i class="ri-lock-line text-gray-400"></i>
+</div>
+<input type="password" id="registerPassword" name="password" placeholder="Create a password" class="pl-10 pr-10 w-full h-12 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none px-4">
+<button type="button" class="show-register-password-toggle absolute inset-y-0 right-0 pr-3 flex items-center w-10 h-full flex items-center justify-center">
+<i class="ri-eye-line text-gray-400"></i>
+</button>
+</div>
+</div>
+<div>
+<label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none w-10 h-full flex items-center justify-center">
+<i class="ri-lock-line text-gray-400"></i>
+</div>
+<input type="password" id="confirmPassword" name="confirm_password" placeholder="Confirm your password" class="pl-10 pr-10 w-full h-12 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none px-4">
+<button type="button" class="show-confirm-password-toggle absolute inset-y-0 right-0 pr-3 flex items-center w-10 h-full flex items-center justify-center">
+<i class="ri-eye-line text-gray-400"></i>
+</button>
+</div>
+</div>
+<div class="flex items-center">
+<input type="checkbox" id="terms" name="terms" class="mr-2">
+<label for="terms" class="text-sm text-gray-600">I agree to the <a href="#" class="text-primary">Terms of Service</a> and <a href="#" class="text-primary">Privacy Policy</a></label>
+</div>
+<button type="submit" class="w-full bg-primary text-white py-3 rounded-button hover:bg-primary/90 transition duration-200 font-medium !rounded-button whitespace-nowrap">Create Account</button>
+<div class="relative flex items-center justify-center my-6">
+<div class="border-t border-gray-300 absolute w-full"></div>
+<span class="bg-white px-4 text-sm text-gray-500 relative">Or sign up with</span>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<button type="button" class="flex items-center justify-center gap-2 border border-gray-300 py-2.5 rounded-button hover:bg-gray-50 transition duration-200 !rounded-button whitespace-nowrap">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-google-fill text-[#4285F4]"></i>
+</div>
+<span class="text-gray-700">Google</span>
+</button>
+<button type="button" class="flex items-center justify-center gap-2 border border-gray-300 py-2.5 rounded-button hover:bg-gray-50 transition duration-200 !rounded-button whitespace-nowrap">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-facebook-fill text-[#1877F2]"></i>
+</div>
+<span class="text-gray-700">Facebook</span>
+</button>
+</div>
+</form>
+<div class="text-center mt-8">
+<p class="text-gray-600">Already have an account? <a href="#" class="text-primary hover:text-primary/80 font-medium toggle-form">Sign In</a></p>
+</div>
+</div>
+<script id="passwordToggle">
+document.addEventListener('DOMContentLoaded', function() {
+const loginForm = document.querySelector('#loginForm');
+const registerForm = document.querySelector('#registerForm');
+const toggleLinks = document.querySelectorAll('.toggle-form');
+toggleLinks.forEach(link => {
+link.addEventListener('click', function(e) {
+e.preventDefault();
+loginForm.classList.toggle('hidden');
+registerForm.classList.toggle('hidden');
+});
+});
+function setupPasswordToggle(toggleSelector, inputId) {
+const toggleButton = document.querySelector(toggleSelector);
+const passwordInput = document.getElementById(inputId);
+const eyeIcon = toggleButton.querySelector('i');
+toggleButton.addEventListener('click', function() {
+if (passwordInput.type === 'password') {
+passwordInput.type = 'text';
+eyeIcon.classList.remove('ri-eye-line');
+eyeIcon.classList.add('ri-eye-off-line');
+} else {
+passwordInput.type = 'password';
+eyeIcon.classList.remove('ri-eye-off-line');
+eyeIcon.classList.add('ri-eye-line');
+}
+});
+}
+setupPasswordToggle('.show-password-toggle', 'password');
+setupPasswordToggle('.show-register-password-toggle', 'registerPassword');
+setupPasswordToggle('.show-confirm-password-toggle', 'confirmPassword');
+});
+</script>
+</body>
+</html>
